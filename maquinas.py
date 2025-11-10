@@ -3,21 +3,31 @@ from maquina_turing import MaquinaTuring
 # 1) (a|b)*abb
 def MT_1(cadena):
     transiciones = {
+        # Avanzamos libremente leyendo a o b mientras buscamos el patrón final
         ('q0', 'a'): ('a', 'R', 'q0'),
-        ('q0', 'b'): ('b', 'R', 'q1'),
+        ('q0', 'b'): ('b', 'R', 'q0'),
 
-        ('q1', 'a'): ('a', 'R', 'q0'),
+        # Cuando creemos ver un posible inicio del final "a"
+        ('q0', 'a'): ('a', 'R', 'q1'),
+
+        # Confirmamos el primer b del final abb
         ('q1', 'b'): ('b', 'R', 'q2'),
 
-        ('q2', 'a'): ('a', 'R', 'q0'),
+        # Confirmamos el segundo b -> si llega aquí, ACEPTA
         ('q2', 'b'): ('b', 'R', 'qA'),
 
-        # Final de la cinta
-        ('q0', '_'): ('_', 'R', 'qR'),
+        # Si en q1 o q2 aparece algo inesperado, regresamos a buscar otra coincidencia
+        ('q1', 'a'): ('a', 'R', 'q1'),
+        ('q2', 'a'): ('a', 'R', 'q1'),
+        ('q2', 'a'): ('a', 'R', 'q1'),
+
+        # Final de la cinta:
+        ('q0', '_'): ('_', 'R', 'qR'),  # Si nunca encontramos abb → Rechaza
         ('q1', '_'): ('_', 'R', 'qR'),
         ('q2', '_'): ('_', 'R', 'qR'),
-        ('qA', '_'): ('_', 'R', 'qA'),
+        ('qA', '_'): ('_', 'R', 'qA'),  # Se mantiene aceptada
     }
+
     return MaquinaTuring(cadena, transiciones, "q0", "qA", "qR")
 
 
